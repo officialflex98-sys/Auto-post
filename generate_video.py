@@ -62,8 +62,7 @@ def generate_script(topic):
     """Ask Gemini to write a short video script."""
     url = (
         "https://generativelanguage.googleapis.com/v1beta/models/"
-        f"gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
-    )
+        f"gemini-2.5-flash-lite:generateContent?key={GEMINI_API_KEY}" )
     prompt = (
         f"Write a 45-second video script (110-130 words) about {topic}. "
         "Punchy, no fluff, conversational tone, plain text only (no markdown, "
