@@ -16,7 +16,7 @@ import requests
 import edge_tts
 from datetime import datetime
 from moviepy.editor import (
-    VideoFileClip, AudioFileClip, TextClip, CompositeVideoClip
+    VideoFileClip, AudioFileClip, TextClip, CompositeVideoClip, concatenate_videoclips
 )
 
 # ---- Config from environment variables (set as GitHub Secrets) ----
@@ -72,6 +72,7 @@ def generate_script(topic):
         "to follow for more free tips."
     )
     body = {"contents": [{"parts": [{"text": prompt}]}]}
+
     last_error = None
     for attempt in range(3):
         try:
@@ -109,18 +110,25 @@ def generate_voiceover(text, out_path):
     asyncio.run(_tts(text, out_path))
 
 
-def fetch_background_video(query, out_path):
-    """Download a relevant vertical stock video from Pexels."""
+def fetch_background_video(query, min_duration, out_path):
+    """Download a relevant vertical stock video from Pexels, preferring clips
+    long enough to cover the audio without needing to loop (which causes
+    visible black flashes at the seam)."""
     url = "https://api.pexels.com/videos/search"
     headers = {"Authorization": PEXELS_API_KEY}
-    params = {"query": query, "orientation": "portrait", "per_page": 5}
+    params = {"query": query, "orientation": "portrait", "per_page": 15}
     r = requests.get(url, headers=headers, params=params, timeout=20)
     r.raise_for_status()
     results = r.json().get("videos", [])
     if not results:
         raise RuntimeError(f"No Pexels results for query: {query}")
 
-    video = random.choice(results)
+    long_enough = [v for v in results if v.get("duration", 0) >= min_duration]
+    pool = long_enough if long_enough else sorted(
+        results, key=lambda v: v.get("duration", 0), reverse=True
+    )[:5]
+
+    video = random.choice(pool)
     files = sorted(video["video_files"], key=lambda f: f.get("width", 0), reverse=True)
     video_url = files[0]["link"]
 
@@ -137,8 +145,8 @@ def combine_video(background_path, audio_path, caption_text, out_path):
 
     bg = VideoFileClip(background_path).without_audio()
     if bg.duration < duration:
-        n_loops = int(duration // bg.duration) + 1
-        bg = bg.loop(n=n_loops)
+        n_copies = int(duration // bg.duration) + 1
+        bg = concatenate_videoclips([bg] * n_copies, method="compose")
     bg = bg.subclip(0, duration)
     bg = bg.set_audio(audio)
 
@@ -170,9 +178,13 @@ def main():
         audio_path = f"{OUTPUT_DIR}/voice_{timestamp}.mp3"
         generate_voiceover(script, audio_path)
 
+        audio_probe = AudioFileClip(audio_path)
+        audio_duration = audio_probe.duration
+        audio_probe.close()
+
         print("[3/4] Fetching background footage...")
         bg_path = f"{OUTPUT_DIR}/bg_{timestamp}.mp4"
-        fetch_background_video(topic.split()[0], bg_path)
+        fetch_background_video(topic.split()[0], audio_duration, bg_path)
 
         print("[4/4] Combining final video...")
         final_path = f"{OUTPUT_DIR}/final_{timestamp}.mp4"
