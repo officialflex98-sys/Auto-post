@@ -72,7 +72,7 @@ def generate_script(topic):
         "to follow for more free tips."
     )
     body = {"contents": [{"parts": [{"text": prompt}]}]}
-last_error = None
+    last_error = None
     for attempt in range(3):
         try:
             r = requests.post(url, json=body, timeout=90)
