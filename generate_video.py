@@ -72,15 +72,22 @@ def generate_script(topic):
         "to follow for more free tips."
     )
     body = {"contents": [{"parts": [{"text": prompt}]}]}
-
-    last_error = None
+last_error = None
     for attempt in range(3):
         try:
-            r = requests.post(url, json=body, timeout=60)
+            r = requests.post(url, json=body, timeout=90)
             r.raise_for_status()
             data = r.json()
             text = data["candidates"][0]["content"]["parts"][0]["text"].strip()
             return text
+        except requests.exceptions.Timeout as e:
+            last_error = e
+            if attempt < 2:
+                wait = 15 * (attempt + 1)
+                print(f"[gemini] timeout, retrying in {wait}s...")
+                time.sleep(wait)
+                continue
+            raise
         except requests.exceptions.HTTPError as e:
             last_error = e
             if r.status_code in (429, 500, 502, 503, 504) and attempt < 2:
