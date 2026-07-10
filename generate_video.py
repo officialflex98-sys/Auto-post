@@ -76,7 +76,7 @@ def generate_script(topic):
     last_error = None
     for attempt in range(3):
         try:
-            r = requests.post(url, json=body, timeout=30)
+            r = requests.post(url, json=body, timeout=60)
             r.raise_for_status()
             data = r.json()
             text = data["candidates"][0]["content"]["parts"][0]["text"].strip()
