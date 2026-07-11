@@ -48,7 +48,7 @@ TOPICS = [
     "how to earn passive income from anywhere ",
     "the laziest way to run facless YouTube channel and still earn thousands of dollars",
    " How I Build Faceless YouTube Channels Using Only AI",
-"Start a YouTube Automation Business from Your Phone"'
+"Start a YouTube Automation Business from Your Phone",
 "The Complete AI YouTube Automation System for Beginners",
 "How to Create Viral YouTube Videos Without Showing Your Face",
 "How Beginners Can Start a YouTube Channel with $0",
