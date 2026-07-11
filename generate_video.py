@@ -46,14 +46,15 @@ TOPICS = [
 ]
 
 FOOTAGE_QUERIES = [
-    "youtube homepage screen",
-    "youtube studio dashboard",
-    "adsense earnings dashboard",
     "youtube analytics dashboard",
+    "earnings graph chart screen",
+    "stock market growth chart",
+    "computer screen data dashboard",
+    "phone screen money app",
+    "money in dollar dashboard ",
+    "PayPal earnings dashboard ",
+    "video editing ",
 ]
-
-FOOTAGE_FALLBACK_QUERY = "youtube analytics dashboard"
-
 
 def log_to_supabase(status, details):
     """Log what happened to the Supabase 'runs' table."""
