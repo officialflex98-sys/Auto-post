@@ -162,7 +162,7 @@ def fetch_pexels_clip(query, out_path, min_duration=4):
     """Download one relevant vertical stock clip from Pexels."""
     url = "https://api.pexels.com/videos/search"
     headers = {"Authorization": PEXELS_API_KEY}
-    params = {"query": query, "orientation": "portrait", "per_page": 15}
+    params = {"query": query, "orientatio0n": "portrait", "per_page": 15}
     r = requests.get(url, headers=headers, params=params, timeout=20)
     r.raise_for_status()
     results = [v for v in r.json().get("videos", []) if v.get("duration", 0) >= min_duration]
@@ -236,7 +236,7 @@ def combine_video(background_paths, audio_path, word_timings, out_path):
 
     hook_duration = min(4, duration)
     hook = TextClip(
-        HOOK_TEXT, fontsize=54, color="yellow", font="DejaVu-Sans-Bold",
+        HOOK_TEXT, fontsize=60, color="yellow", font="DejaVu-Sans-Bold",
         method="caption", size=(bg.w * 0.85, None), align="center",
         stroke_color="black", stroke_width=2
     ).set_position(("center", bg.h * 0.35)).set_start(0).set_duration(hook_duration)
@@ -249,7 +249,7 @@ def combine_video(background_paths, audio_path, word_timings, out_path):
             continue
         dur = min(dur, duration - start)
         tc = TextClip(
-            chunk["text"], fontsize=46, color="white", font="DejaVu-Sans-Bold",
+            chunk["text"], fontsize=58, color="red", font="DejaVu-Sans-Bold",
             method="caption", size=(bg.w * 0.85, None), align="center",
             stroke_color="black", stroke_width=2
         ).set_position(("center", bg.h * 0.72)).set_start(start).set_duration(dur)
