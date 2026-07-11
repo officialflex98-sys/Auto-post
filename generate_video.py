@@ -34,6 +34,7 @@ TARGET_W, TARGET_H = 1080, 1920
 
 HOOK_TEXT = "💸 STOP SCROLLING!\nTHIS SKILL CAN CHANGE\nYOUR INCOME!"
 CTA_TEXT = "Join the training now — link below\nor comment YOUTUBE and check the pin comment"
+VOICE_INTRO_LINE = "STOP SCROLLING, THIS WILL CHANGE YOUR INCOME COMPLETELY!!!"
 
 WORDS_PER_CAPTION_CHUNK = 4
 
@@ -291,12 +292,13 @@ def main():
 
     try:
         print(f"[1/4] Generating script for topic: {topic}")
-        script = generate_script(topic)
-        print(script)
+script = generate_script(topic)
+full_script = f"{VOICE_INTRO_LINE} {script}"
+print(full_script)
 
-        print("[2/4] Generating voiceover...")
-        audio_path = f"{OUTPUT_DIR}/voice_{timestamp}.mp3"
-        word_timings = generate_voiceover(script, audio_path)
+print("[2/4] Generating voiceover...")
+audio_path = f"{OUTPUT_DIR}/voice_{timestamp}.mp3"
+word_timings = generate_voiceover(full_script, audio_path)
 
         print("[3/4] Fetching background footage clips...")
         bg_paths = fetch_background_clips(OUTPUT_DIR, timestamp)
