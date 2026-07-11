@@ -19,14 +19,15 @@ jobs:
 
       - name: Install ffmpeg and ImageMagick
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg imagemagick
+          export DEBIAN_FRONTEND=noninteractive
+          timeout 120 sudo apt-get update
+          timeout 180 sudo apt-get install -y ffmpeg imagemagick
           sudo sed -i 's/rights="none" pattern="@\*"/rights="read|write" pattern="@*"/' /etc/ImageMagick-6/policy.xml || true
 
       - name: Install Python dependencies
         run: pip install -r requirements.txt
 
-      - name: Run video generation (retry until success, 15 min cap per attempt)
+      - name: Run video generation (15 min cap, up to 3 attempts)
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
@@ -39,9 +40,9 @@ jobs:
               echo "Succeeded on attempt $attempt"
               exit 0
             fi
-            echo "Attempt $attempt failed or timed out, retrying..."
+            echo "Attempt $attempt failed or timed out after 15 minutes."
           done
-          echo "All attempts failed"
+          echo "All 3 attempts failed. Next scheduled run is in 6 hours."
           exit 1
 
       - name: Upload generated video as artifact
