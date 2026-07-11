@@ -26,14 +26,23 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements.txt
 
-      - name: Run video generation
+      - name: Run video generation (retry until success, 15 min cap per attempt)
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-          WHATSAPP_LINK: ${{ secrets.WHATSAPP_LINK }}
-        run: python generate_video.py
+        run: |
+          for attempt in 1 2 3; do
+            echo "Attempt $attempt..."
+            if timeout 900 python generate_video.py; then
+              echo "Succeeded on attempt $attempt"
+              exit 0
+            fi
+            echo "Attempt $attempt failed or timed out, retrying..."
+          done
+          echo "All attempts failed"
+          exit 1
 
       - name: Upload generated video as artifact
         uses: actions/upload-artifact@v4
