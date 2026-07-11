@@ -34,7 +34,7 @@ TARGET_W, TARGET_H = 1080, 1920
 
 HOOK_TEXT = "💸 STOP SCROLLING!\nTHIS SKILL CAN CHANGE\nYOUR INCOME!"
 CTA_TEXT = "Join the training now — link below\nor comment YOUTUBE and check the pin comment"
-VOICE_INTRO_LINE = "STOP SCROLLING, THIS WILL CHANGE YOUR INCOME COMPLETELY!!!"
+VOICE_INTRO_LINE = "Stop scrolling, this will change your income completely!!!"
 
 WORDS_PER_CAPTION_CHUNK = 4
 
@@ -44,29 +44,10 @@ TOPICS = [
     "why more beginners are choosing faceless AI YouTube automation over filming themselves",
     "how AI tools now let anyone build a full YouTube channel without ever appearing on camera",
     "the faceless AI YouTube automation blueprint helping everyday people build a second income",
-    "how to make thousands of dollars online from anywhere",
-    "how to earn passive income from anywhere ",
-    "the laziest way to run facless YouTube channel and still earn thousands of dollars",
-   " How I Build Faceless YouTube Channels Using Only AI",
-"Start a YouTube Automation Business from Your Phone",
-"The Complete AI YouTube Automation System for Beginners",
-"How to Create Viral YouTube Videos Without Showing Your Face",
-"How Beginners Can Start a YouTube Channel with $0",
-"My Step-by-Step AI Video Creation Workflow",
-"Mistakes That Keep New YouTube Automation Channels from Growing",
-"How to Find High-CPM YouTube Niches",
-"From Idea to Published Video in Under 30 Minutes",
+    "starting a YouTube automation business from your phone",
 ]
 
 FOOTAGE_QUERIES = [
-    "youtube analytics dashboard",
-    "earnings graph chart screen",
-    "stock market growth chart",
-    "computer screen data dashboard",
-    "phone screen money app",
-    "money in dollar dashboard ",
-    "PayPal earnings dashboard ",
-    "video editing ",
     "youtube homepage screen",
     "youtube studio dashboard",
     "adsense earnings dashboard",
@@ -74,6 +55,7 @@ FOOTAGE_QUERIES = [
 ]
 
 FOOTAGE_FALLBACK_QUERY = "youtube analytics dashboard"
+
 
 def log_to_supabase(status, details):
     """Log what happened to the Supabase 'runs' table."""
@@ -149,7 +131,7 @@ async def _tts_with_timings(text, out_path):
             if chunk["type"] == "audio":
                 f.write(chunk["data"])
             elif chunk["type"] == "WordBoundary":
-                start = chunk["offset"] / 10_000_000  # 100ns units -> seconds
+                start = chunk["offset"] / 10_000_000
                 dur = chunk["duration"] / 10_000_000
                 words.append({"text": chunk["text"], "start": start, "end": start + dur})
     return words
@@ -252,7 +234,6 @@ def combine_video(background_paths, audio_path, word_timings, out_path):
 
     layers = [bg]
 
-    # Opening hook (first 4 seconds)
     hook_duration = min(4, duration)
     hook = TextClip(
         HOOK_TEXT, fontsize=54, color="yellow", font="DejaVu-Sans-Bold",
@@ -261,7 +242,6 @@ def combine_video(background_paths, audio_path, word_timings, out_path):
     ).set_position(("center", bg.h * 0.35)).set_start(0).set_duration(hook_duration)
     layers.append(hook)
 
-    # Synced burst captions (a few words at a time, timed to the voiceover)
     for chunk in build_caption_chunks(word_timings):
         start = chunk["start"]
         dur = max(chunk["end"] - start, 0.3)
@@ -275,7 +255,6 @@ def combine_video(background_paths, audio_path, word_timings, out_path):
         ).set_position(("center", bg.h * 0.72)).set_start(start).set_duration(dur)
         layers.append(tc)
 
-    # Persistent CTA footer
     footer = TextClip(
         CTA_TEXT, fontsize=26, color="yellow", font="DejaVu-Sans-Bold",
         method="caption", size=(bg.w * 0.9, None), align="center"
@@ -292,13 +271,13 @@ def main():
 
     try:
         print(f"[1/4] Generating script for topic: {topic}")
-script = generate_script(topic)
-full_script = f"{VOICE_INTRO_LINE} {script}"
-print(full_script)
+        script = generate_script(topic)
+        full_script = f"{VOICE_INTRO_LINE} {script}"
+        print(full_script)
 
-print("[2/4] Generating voiceover...")
-audio_path = f"{OUTPUT_DIR}/voice_{timestamp}.mp3"
-word_timings = generate_voiceover(full_script, audio_path)
+        print("[2/4] Generating voiceover...")
+        audio_path = f"{OUTPUT_DIR}/voice_{timestamp}.mp3"
+        word_timings = generate_voiceover(full_script, audio_path)
 
         print("[3/4] Fetching background footage clips...")
         bg_paths = fetch_background_clips(OUTPUT_DIR, timestamp)
@@ -308,7 +287,7 @@ word_timings = generate_voiceover(full_script, audio_path)
         combine_video(bg_paths, audio_path, word_timings, final_path)
 
         print(f"Done. Output: {final_path}")
-        log_to_supabase("success", {"topic": topic, "script": script, "file": final_path})
+        log_to_supabase("success", {"topic": topic, "script": full_script, "file": final_path})
 
     except Exception as e:
         print(f"ERROR: {e}")
