@@ -53,7 +53,6 @@ FOOTAGE_QUERIES = [
 ]
 
 FOOTAGE_FALLBACK_QUERY = "youtube analytics dashboard"
-]
 
 
 def log_to_supabase(status, details):
