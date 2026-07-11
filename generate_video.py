@@ -43,6 +43,18 @@ TOPICS = [
     "why more beginners are choosing faceless AI YouTube automation over filming themselves",
     "how AI tools now let anyone build a full YouTube channel without ever appearing on camera",
     "the faceless AI YouTube automation blueprint helping everyday people build a second income",
+    "how to make thousands of dollars online from anywhere",
+    "how to earn passive income from anywhere ",
+    "the laziest way to run facless YouTube channel and still earn thousands of dollars",
+   " How I Build Faceless YouTube Channels Using Only AI",
+"Start a YouTube Automation Business from Your Phone"'
+"The Complete AI YouTube Automation System for Beginners",
+"How to Create Viral YouTube Videos Without Showing Your Face",
+"How Beginners Can Start a YouTube Channel with $0",
+"My Step-by-Step AI Video Creation Workflow",
+"Mistakes That Keep New YouTube Automation Channels from Growing",
+"How to Find High-CPM YouTube Niches",
+"From Idea to Published Video in Under 30 Minutes",
 ]
 
 FOOTAGE_QUERIES = [
@@ -54,7 +66,13 @@ FOOTAGE_QUERIES = [
     "money in dollar dashboard ",
     "PayPal earnings dashboard ",
     "video editing ",
+    "youtube homepage screen",
+    "youtube studio dashboard",
+    "adsense earnings dashboard",
+    "youtube analytics dashboard",
 ]
+
+FOOTAGE_FALLBACK_QUERY = "youtube analytics dashboard"
 
 def log_to_supabase(status, details):
     """Log what happened to the Supabase 'runs' table."""
