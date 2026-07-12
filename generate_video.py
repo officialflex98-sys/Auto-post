@@ -36,7 +36,7 @@ HOOK_TEXT = "💸 STOP SCROLLING!\nTHIS SKILL CAN CHANGE\nYOUR INCOME!"
 CTA_TEXT = "Join the training now — link below\nor comment YOUTUBE and check the pin comment"
 VOICE_INTRO_LINE = "Stop scrolling, this will change your income completely!!!"
 
-WORDS_PER_CAPTION_CHUNK = 2
+WORDS_PER_CAPTION_CHUNK = 1
 
 TOPICS = [
     "how faceless AI-generated YouTube channels are quietly earning creators money without ever showing their face",
