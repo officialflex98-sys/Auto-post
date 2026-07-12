@@ -267,20 +267,26 @@ def combine_video(background_paths, audio_path, word_timings, out_path):
 
     # Synced burst captions (1-2 words at a time, timed to the voiceover,
     # with a quick pop-in and alternating color like the CapCut-style templates)
-    caption_colors = ["red", "yellow"]
+    caption_colors = ["red", "yellow","green"]
     for idx, chunk in enumerate(build_caption_chunks(word_timings)):
         start = chunk["start"]
         dur = max(chunk["end"] - start, 0.3)
         if start >= duration:
             continue
         dur = min(dur, duration - start)
+
+
+        ///////////////////////////////////
         tc = TextClip(
-            chunk["text"], fontsize=52, color=caption_colors[idx % 2], font="DejaVu-Sans-Bold",
+            chunk["text"], fontsize=60, color=caption_colors[idx % 2], font="DejaVu-Sans-Bold",
             method="caption", size=(bg.w * 0.85, None), align="center",
             stroke_color="black", stroke_width=3
-        ).set_position(("center", bg.h * 0.72)).set_start(start).set_duration(dur).fx(
+        ).set_position(("center", bg.h * 1.0)).set_start(start).set_duration(dur).fx(
             lambda c: c.fadein(min(0.08, dur / 3))
         )
+
+
+        
         layers.append(tc)
 
     # Persistent CTA footer
