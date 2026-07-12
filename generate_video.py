@@ -52,9 +52,15 @@ FOOTAGE_QUERIES = [
     "youtube studio dashboard",
     "adsense earnings dashboard",
     "youtube analytics dashboard",
+
+    "youtube analytics dashboard",
+    "earnings graph chart screen",
+    "stock market growth chart",
+    "computer screen data dashboard",
+    "phone screen money app",
+
 ]
 
-FOOTAGE_FALLBACK_QUERY = "youtube analytics dashboard"
 
 
 def log_to_supabase(status, details):
@@ -180,7 +186,7 @@ def fetch_pexels_clip(query, out_path, min_duration=4):
 
 
 def fetch_background_clips(out_dir, timestamp):
-    """Download 2-3 different YouTube-themed clips (homepage/studio/AdSense/
+    """Download 6-10 different YouTube-themed clips (homepage/studio/AdSense/
     analytics) for visual variety instead of looping a single clip."""
     n_clips = random.choice([2, 3])
     queries = random.sample(FOOTAGE_QUERIES, min(n_clips, len(FOOTAGE_QUERIES)))
