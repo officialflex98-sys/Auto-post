@@ -132,6 +132,8 @@ async def _tts_with_timings(text, out_path):
             elif chunk["type"] == "WordBoundary":
                 start = chunk["offset"] / 10_000_000  # 100ns units -> seconds
                 dur = chunk["duration"] / 10_000_000
+
+                
                 words.append({"text": chunk["text"], "start": start, "end": start + dur})
     print(f"[tts] captured {len(words)} word-boundary timings")
     return words
@@ -161,6 +163,10 @@ def estimate_word_timings(text, audio_path):
     for tok in tokens:
         words.append({"text": tok, "start": t, "end": t + per_word})
         t += per_word
+    return words
+    if not words:
+        print("[tts] No word-boundary timing data returned; using estimated even timing instead.")
+        words = estimate_word_timings(text, out_path)
     return words
 
 
