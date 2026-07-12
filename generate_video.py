@@ -131,7 +131,7 @@ async def _tts_with_timings(text, out_path):
     """Generate voiceover audio and capture per-word timing as we go."""
     voice = "en-US-GuyNeural"
     
-    communicate = edge_tts.Communicate(text, voice, boundary="WordBoundary")
+    communicate = edge_tts.Communicate(text, voice, boundary="WordBoundary")= []
     
     with open(out_path, "wb") as f:
         async for chunk in communicate.stream():
