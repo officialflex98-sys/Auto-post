@@ -36,7 +36,7 @@ HOOK_TEXT = "💸 STOP SCROLLING!\nTHIS SKILL CAN CHANGE\nYOUR INCOME!"
 CTA_TEXT = "Join the training now — link below\nor comment YOUTUBE and check the pin comment"
 VOICE_INTRO_LINE = "Stop scrolling, this will change your income completely!!!"
 
-WORDS_PER_CAPTION_CHUNK = 4
+WORDS_PER_CAPTION_CHUNK = 2
 
 TOPICS = [
     "how faceless AI-generated YouTube channels are quietly earning creators money without ever showing their face",
@@ -123,7 +123,7 @@ def generate_script(topic):
 async def _tts_with_timings(text, out_path):
     """Generate voiceover audio and capture per-word timing as we go."""
     voice = "en-US-GuyNeural"
-    communicate = edge_tts.Communicate(text, voice)
+    communicate = edge_tts.Communicate(text, voice, boundary="WordBoundary")
     words = []
     with open(out_path, "wb") as f:
         async for chunk in communicate.stream():
@@ -267,7 +267,7 @@ def combine_video(background_paths, audio_path, word_timings, out_path):
 
     # Synced burst captions (4 words at a time, timed to the voiceover,
     # alternating red/yellow, quick pop-in like CapCut-style templates)
-    caption_colors = ["red", "yellow"]
+    caption_colors = ["red", "yellow", "green"]
     for idx, chunk in enumerate(build_caption_chunks(word_timings)):
         start = chunk["start"]
         dur = max(chunk["end"] - start, 0.3)
