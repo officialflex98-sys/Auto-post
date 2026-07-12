@@ -145,8 +145,29 @@ async def _tts_with_timings(text, out_path):
 
 def generate_voiceover(text, out_path):
     """Returns list of {text, start, end} word timings."""
-    return asyncio.run(_tts_with_timings(text, out_path))
+    words = asyncio.run(_tts_with_timings(text, out_path))
+    if not words:
+        print("[tts] No word-boundary timing data returned; using estimated even timing instead.")
+        words = estimate_word_timings(text, out_path)
+    return words
 
+
+def estimate_word_timings(text, audio_path):
+    """Fallback: evenly distribute words across the real audio duration.
+    Used only if the TTS engine doesn't return precise word-boundary events."""
+    probe = AudioFileClip(audio_path)
+    duration = probe.duration
+    probe.close()
+    tokens = text.split()
+    if not tokens:
+        return []
+    per_word = duration / len(tokens)
+    words = []
+    t = 0.0
+    for tok in tokens:
+        words.append({"text": tok, "start": t, "end": t + per_word})
+        t += per_word
+    return words
 
 def build_caption_chunks(words, chunk_size=WORDS_PER_CAPTION_CHUNK):
     """Group word timings into short bursts of a few words each, so captions
