@@ -276,7 +276,7 @@ def combine_video(background_paths, audio_path, word_timings, out_path):
         dur = min(dur, duration - start)
 
 
-        ///////////////////////////////////
+        
         tc = TextClip(
             chunk["text"], fontsize=60, color=caption_colors[idx % 2], font="DejaVu-Sans-Bold",
             method="caption", size=(bg.w * 0.85, None), align="center",
