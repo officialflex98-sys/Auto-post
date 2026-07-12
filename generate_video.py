@@ -36,7 +36,7 @@ HOOK_TEXT = "💸 STOP SCROLLING!\nTHIS SKILL CAN CHANGE\nYOUR INCOME!"
 CTA_TEXT = "Join the training now — link below\nor comment YOUTUBE and check the pin comment"
 VOICE_INTRO_LINE = "Stop scrolling, this will change your income completely!!!"
 
-WORDS_PER_CAPTION_CHUNK = 2
+WORDS_PER_CAPTION_CHUNK = 4
 
 TOPICS = [
     "how faceless AI-generated YouTube channels are quietly earning creators money without ever showing their face",
@@ -123,7 +123,7 @@ def generate_script(topic):
 async def _tts_with_timings(text, out_path):
     """Generate voiceover audio and capture per-word timing as we go."""
     voice = "en-US-GuyNeural"
-    communicate = edge_tts.Communicate(text, voice, boundary="WordBoundary")
+    communicate = edge_tts.Communicate(text, voice)
     words = []
     with open(out_path, "wb") as f:
         async for chunk in communicate.stream():
@@ -132,8 +132,6 @@ async def _tts_with_timings(text, out_path):
             elif chunk["type"] == "WordBoundary":
                 start = chunk["offset"] / 10_000_000  # 100ns units -> seconds
                 dur = chunk["duration"] / 10_000_000
-
-                
                 words.append({"text": chunk["text"], "start": start, "end": start + dur})
     print(f"[tts] captured {len(words)} word-boundary timings")
     return words
@@ -163,10 +161,6 @@ def estimate_word_timings(text, audio_path):
     for tok in tokens:
         words.append({"text": tok, "start": t, "end": t + per_word})
         t += per_word
-    return words
-    if not words:
-        print("[tts] No word-boundary timing data returned; using estimated even timing instead.")
-        words = estimate_word_timings(text, out_path)
     return words
 
 
@@ -271,28 +265,22 @@ def combine_video(background_paths, audio_path, word_timings, out_path):
     ).set_position(("center", bg.h * 0.35)).set_start(0).set_duration(hook_duration)
     layers.append(hook)
 
-    # Synced burst captions (1-2 words at a time, timed to the voiceover,
-    # with a quick pop-in and alternating color like the CapCut-style templates)
-    caption_colors = ["red", "yellow","green"]
+    # Synced burst captions (4 words at a time, timed to the voiceover,
+    # alternating red/yellow, quick pop-in like CapCut-style templates)
+    caption_colors = ["red", "yellow"]
     for idx, chunk in enumerate(build_caption_chunks(word_timings)):
         start = chunk["start"]
         dur = max(chunk["end"] - start, 0.3)
         if start >= duration:
             continue
         dur = min(dur, duration - start)
-
-
-        
         tc = TextClip(
-            chunk["text"], fontsize=60, color=caption_colors[idx % 2], font="DejaVu-Sans-Bold",
+            chunk["text"], fontsize=52, color=caption_colors[idx % 2], font="DejaVu-Sans-Bold",
             method="caption", size=(bg.w * 0.85, None), align="center",
             stroke_color="black", stroke_width=3
-        ).set_position(("center", bg.h * 1.0)).set_start(start).set_duration(dur).fx(
+        ).set_position(("center", bg.h * 0.72)).set_start(start).set_duration(dur).fx(
             lambda c: c.fadein(min(0.08, dur / 3))
         )
-
-
-        
         layers.append(tc)
 
     # Persistent CTA footer
