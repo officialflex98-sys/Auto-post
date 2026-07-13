@@ -132,11 +132,11 @@ async def _tts_with_timings(text, out_path):
             elif chunk["type"] == "WordBoundary":
                 start = chunk["offset"] / 10_000_000  # 100ns units -> seconds
                 dur = chunk["duration"] / 10_000_000
+
+                
                 words.append({"text": chunk["text"], "start": start, "end": start + dur})
     print(f"[tts] captured {len(words)} word-boundary timings")
     return words
-
-
 def generate_voiceover(text, out_path):
     """Returns list of {text, start, end} word timings."""
     words = asyncio.run(_tts_with_timings(text, out_path))
