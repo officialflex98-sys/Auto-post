@@ -275,17 +275,17 @@ def combine_video(background_paths, audio_path, word_timings, out_path):
             continue
         dur = min(dur, duration - start)
         tc = TextClip(
-            chunk["text"], fontsize=52, color=caption_colors[idx % 2], font="DejaVu-Sans-Bold",
-            method="caption", size=(bg.w * 0.85, None), align="center",
+            chunk["text"], fontsize=60, color=caption_colors[idx % 3], font="DejaVu-Sans-Bold",
+            method="caption", size=(bg.w * 1.0, None), align="center",
             stroke_color="black", stroke_width=3
-        ).set_position(("center", bg.h * 0.72)).set_start(start).set_duration(dur).fx(
-            lambda c: c.fadein(min(0.08, dur / 3))
+        ).set_position(("center", bg.h * 1.0)).set_start(start).set_duration(dur).fx(
+            lambda c: c.fadein(min(0.1, dur / 3))
         )
         layers.append(tc)
 
     # Persistent CTA footer
     footer = TextClip(
-        CTA_TEXT, fontsize=26, color="yellow", font="DejaVu-Sans-Bold",
+        CTA_TEXT, fontsize=30, color="yellow", font="DejaVu-Sans-Bold",
         method="caption", size=(bg.w * 0.9, None), align="center"
     ).set_position(("center", bg.h * 0.92)).set_duration(duration)
     layers.append(footer)
