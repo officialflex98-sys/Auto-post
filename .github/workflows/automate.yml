@@ -2,8 +2,8 @@ name: Generate Video
 
 on:
   schedule:
-    - cron: "0 */6 * * *"
-  workflow_dispatch: {}
+    - cron: "0 */6 * * *"   # every 6 hours
+  workflow_dispatch: {}      # lets you click "Run workflow" manually to test
 
 jobs:
   generate:
@@ -20,8 +20,8 @@ jobs:
       - name: Install ffmpeg and ImageMagick
         run: |
           export DEBIAN_FRONTEND=noninteractive
-          timeout 120 sudo apt-get update
-          timeout 180 sudo apt-get install -y ffmpeg imagemagick
+          timeout 180 sudo apt-get update
+          timeout 420 sudo apt-get install -y ffmpeg imagemagick
           sudo sed -i 's/rights="none" pattern="@\*"/rights="read|write" pattern="@*"/' /etc/ImageMagick-6/policy.xml || true
 
       - name: Install Python dependencies
