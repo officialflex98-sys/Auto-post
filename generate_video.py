@@ -132,11 +132,11 @@ async def _tts_with_timings(text, out_path):
             elif chunk["type"] == "WordBoundary":
                 start = chunk["offset"] / 10_000_000  # 100ns units -> seconds
                 dur = chunk["duration"] / 10_000_000
-
-                
                 words.append({"text": chunk["text"], "start": start, "end": start + dur})
     print(f"[tts] captured {len(words)} word-boundary timings")
     return words
+
+
 def generate_voiceover(text, out_path):
     """Returns list of {text, start, end} word timings."""
     words = asyncio.run(_tts_with_timings(text, out_path))
@@ -199,6 +199,7 @@ def fetch_pexels_clip(query, out_path, min_duration=4):
     with open(out_path, "wb") as f:
         for chunk in resp.iter_content(chunk_size=8192):
             f.write(chunk)
+
 
 def fetch_background_clips(out_dir, timestamp):
     """Download 2-3 different YouTube-themed clips (homepage/studio/AdSense/
@@ -264,8 +265,8 @@ def combine_video(background_paths, audio_path, word_timings, out_path):
     ).set_position(("center", bg.h * 0.35)).set_start(0).set_duration(hook_duration)
     layers.append(hook)
 
-    # Synced burst captions (4 words at a time, timed to the voiceover,
-    # alternating red/yellow, quick pop-in like CapCut-style templates)
+    # Synced burst captions (2 words at a time, timed to the voiceover,
+    # rotating red/yellow/green, quick pop-in like CapCut-style templates)
     caption_colors = ["red", "yellow", "green"]
     for idx, chunk in enumerate(build_caption_chunks(word_timings)):
         start = chunk["start"]
@@ -275,9 +276,9 @@ def combine_video(background_paths, audio_path, word_timings, out_path):
         dur = min(dur, duration - start)
         tc = TextClip(
             chunk["text"], fontsize=60, color=caption_colors[idx % 3], font="DejaVu-Sans-Bold",
-            method="caption", size=(bg.w * 1.0, None), align="center",
+            method="caption", size=(bg.w * 0.85, None), align="center",
             stroke_color="black", stroke_width=3
-        ).set_position(("center", bg.h * 1.0)).set_start(start).set_duration(dur).fx(
+        ).set_position(("center", bg.h * 0.72)).set_start(start).set_duration(dur).fx(
             lambda c: c.fadein(min(0.1, dur / 3))
         )
         layers.append(tc)
