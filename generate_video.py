@@ -200,7 +200,6 @@ def fetch_pexels_clip(query, out_path, min_duration=4):
         for chunk in resp.iter_content(chunk_size=8192):
             f.write(chunk)
 
-
 def fetch_background_clips(out_dir, timestamp):
     """Download 2-3 different YouTube-themed clips (homepage/studio/AdSense/
     analytics) for visual variety instead of looping a single clip."""
