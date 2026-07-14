@@ -262,7 +262,7 @@ def combine_video(background_paths, audio_path, word_timings, out_path):
         HOOK_TEXT, fontsize=54, color="yellow", font="DejaVu-Sans-Bold",
         method="caption", size=(bg.w * 0.85, None), align="center",
         stroke_color="black", stroke_width=2
-    ).set_position(("center", bg.h * 0.72)).set_start(0).set_duration(hook_duration)
+    ).set_position(("center", bg.h * 0.23)).set_start(0).set_duration(hook_duration)
     layers.append(hook)
 
     # Synced burst captions (2 words at a time, timed to the voiceover,
@@ -278,7 +278,7 @@ def combine_video(background_paths, audio_path, word_timings, out_path):
             chunk["text"], fontsize=60, color=caption_colors[idx % 3], font="DejaVu-Sans-Bold",
             method="caption", size=(bg.w * 0.85, None), align="center",
             stroke_color="black", stroke_width=3
-        ).set_position(("center", bg.h * 0.72)).set_start(start).set_duration(dur).fx(
+        ).set_position(("center", bg.h * 0.63)).set_start(start).set_duration(dur).fx(
             lambda c: c.fadein(min(0.1, dur / 3))
         )
         layers.append(tc)
