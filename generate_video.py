@@ -9,7 +9,6 @@ Or triggered automatically via GitHub Actions on a schedule.
 """
 
 import os
-import json
 import random
 import asyncio
 import time
@@ -77,18 +76,12 @@ def log_to_supabase(status, details):
         print(f"[supabase] logging failed: {e}")
 
 
-def generate_video():
-    topic = get_topic()
-
-    prompt = (
-        f"Write a script about {topic}"
+def generate_script(topic):
+    """Ask Gemini for a short faceless-YouTube promo script on the given topic."""
+    url = (
+        "https://generativelanguage.googleapis.com/v1beta/models/"
+        f"gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
     )
-
-
-
-url = (
-    "https://generativelanguage.googleapis.com/v1beta/models/"
-    f"gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}")
 
     prompt = (
         f"Write a 45-second video script (110-130 words) about {topic}. "
@@ -286,7 +279,7 @@ def combine_video(background_paths, audio_path, word_timings, out_path):
             method="caption", size=(bg.w * 0.85, None), align="center",
             stroke_color="black", stroke_width=3
         ).set_position(("center", bg.h * 0.63)).set_start(start).set_duration(dur).fx(
-            lambda c: c.fadein(min(0.1, dur / 3))
+            lambda c, d=dur: c.fadein(min(0.1, d / 3))
         )
         layers.append(tc)
 
