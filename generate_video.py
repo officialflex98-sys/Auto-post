@@ -80,7 +80,7 @@ def generate_script(topic):
     """Ask Gemini for a short faceless-YouTube promo script on the given topic."""
     url = (
         "https://generativelanguage.googleapis.com/v1beta/models/"
-        f"gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
+        f"gemini-3.5-flash:generateContent?key={GEMINI_API_KEY}"
     )
 
     prompt = (
