@@ -77,12 +77,11 @@ def log_to_supabase(status, details):
         print(f"[supabase] logging failed: {e}")
 
 
-def generate_script(topic):
-    """Ask Gemini to write a short video script promoting the training."""
-    url = (
-        "https://generativelanguage.googleapis.com/v1beta/models/"
-        f"gemini-3.5-flash:generateContent?key={GEMINI_API_KEY}"
-    )
+url = (
+    "https://generativelanguage.googleapis.com/v1beta/models/"
+    f"gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
+)
+
     prompt = (
         f"Write a 45-second video script (110-130 words) about {topic}. "
         "Punchy, no fluff, conversational tone, plain text only (no markdown, "
