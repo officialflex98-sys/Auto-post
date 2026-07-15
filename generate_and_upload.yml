@@ -1,0 +1,72 @@
+name: Generate and Upload Video
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+jobs:
+  generate-and-upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install FFmpeg and ImageMagick
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg imagemagick
+          sudo sed -i 's/rights="none" pattern="@\*"/rights="read|write" pattern="@*"/' /etc/ImageMagick-6/policy.xml || true
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generate Video (Retry up to 3 times)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          success=false
+
+          for attempt in 1 2 3; do
+            echo "========================"
+            echo "Attempt $attempt of 3"
+            echo "========================"
+
+            if timeout 900 python generate_video.py; then
+              echo "Video generated successfully."
+              success=true
+              break
+            else
+              echo "Attempt $attempt failed."
+            fi
+          done
+
+          if [ "$success" != "true" ]; then
+            echo "Video generation failed after 3 attempts."
+            exit 1
+          fi
+
+      - name: Upload Video as GitHub Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-video-${{ github.run_number }}
+          path: output/*.mp4
+          retention-days: 7
+
+      - name: Upload Video to Facebook
+        env:
+          FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
+          FACEBOOK_PAGE_ACCESS_TOKEN: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
+        run: python upload_facebook.py
