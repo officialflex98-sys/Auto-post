@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: "0 */6 * * *"
   workflow_dispatch:
-  
+
 jobs:
   generate-and-upload:
     runs-on: ubuntu-latest
@@ -58,17 +58,16 @@ jobs:
             exit 1
           fi
 
-      - name: Upload Video to YouTube
-        env:
-          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
-          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
-          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
-        run: |
-          python upload_youtube.py
-
       - name: Upload Video as GitHub Artifact
         uses: actions/upload-artifact@v4
         with:
           name: generated-video-${{ github.run_number }}
           path: output/*.mp4
           retention-days: 7
+
+      - name: Upload Video to YouTube
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: python upload_youtube.py
