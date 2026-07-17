@@ -37,6 +37,13 @@ VOICE_INTRO_LINE = "Stop scrolling, this will change your income completely!!!"
 
 WORDS_PER_CAPTION_CHUNK = 2
 
+# Gemini requests: keep the per-call timeout generous and the retry count low.
+# The GitHub Actions workflow already retries the whole script up to 3 times,
+# so retrying too aggressively in here just multiplies wait time on a genuine
+# slowdown/outage (3 internal x 3 outer = up to 9 attempts before failing).
+GEMINI_TIMEOUT_SECONDS = 120
+GEMINI_MAX_ATTEMPTS = 2
+
 TOPICS = [
     "how faceless AI-generated YouTube channels are quietly earning creators money without ever showing their face",
     "the exact system behind faceless AI YouTube automation channels that are blowing up right now",
@@ -94,16 +101,16 @@ def generate_script(topic):
     body = {"contents": [{"parts": [{"text": prompt}]}]}
 
     last_error = None
-    for attempt in range(3):
+    for attempt in range(GEMINI_MAX_ATTEMPTS):
         try:
-            r = requests.post(url, json=body, timeout=90)
+            r = requests.post(url, json=body, timeout=GEMINI_TIMEOUT_SECONDS)
             r.raise_for_status()
             data = r.json()
             text = data["candidates"][0]["content"]["parts"][0]["text"].strip()
             return text
         except requests.exceptions.Timeout as e:
             last_error = e
-            if attempt < 2:
+            if attempt < GEMINI_MAX_ATTEMPTS - 1:
                 wait = 15 * (attempt + 1)
                 print(f"[gemini] timeout, retrying in {wait}s...")
                 time.sleep(wait)
@@ -111,7 +118,7 @@ def generate_script(topic):
             raise
         except requests.exceptions.HTTPError as e:
             last_error = e
-            if r.status_code in (429, 500, 502, 503, 504) and attempt < 2:
+            if r.status_code in (429, 500, 502, 503, 504) and attempt < GEMINI_MAX_ATTEMPTS - 1:
                 wait = 15 * (attempt + 1)
                 print(f"[gemini] {r.status_code} error, retrying in {wait}s...")
                 time.sleep(wait)
@@ -256,13 +263,15 @@ def combine_video(background_paths, audio_path, word_timings, out_path):
 
     layers = [bg]
 
-    # Opening hook (first 4 seconds)
-    hook_duration = min(duration)
+    # Hook caption — stays on screen for the FULL video (was previously
+    # capped at 4s via `hook_duration = min(4, duration)`, and had briefly
+    # regressed to `min(duration)`, a single-argument call that would raise
+    # TypeError). Just use the full audio/video duration directly.
     hook = TextClip(
         HOOK_TEXT, fontsize=54, color="yellow", font="DejaVu-Sans-Bold",
         method="caption", size=(bg.w * 0.85, None), align="center",
         stroke_color="black", stroke_width=2
-    ).set_position(("center", bg.h * 0.23)).set_start(0).set_duration(hook_duration)
+    ).set_position(("center", bg.h * 0.23)).set_start(0).set_duration(duration)
     layers.append(hook)
 
     # Synced burst captions (2 words at a time, timed to the voiceover,
