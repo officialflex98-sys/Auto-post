@@ -257,7 +257,7 @@ def combine_video(background_paths, audio_path, word_timings, out_path):
     layers = [bg]
 
     # Opening hook (first 4 seconds)
-    hook_duration = min(4, duration)
+    hook_duration = min(duration)
     hook = TextClip(
         HOOK_TEXT, fontsize=54, color="yellow", font="DejaVu-Sans-Bold",
         method="caption", size=(bg.w * 0.85, None), align="center",
