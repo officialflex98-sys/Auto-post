@@ -32,7 +32,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 TARGET_W, TARGET_H = 1080, 1920
 
 HOOK_TEXT = "💸 STOP SCROLLING!\nTHIS SKILL CAN CHANGE\nYOUR INCOME!"
-CTA_TEXT = "Join the training now — link below\nor comment YOUTUBE and check the pin comment"
+CTA_TEXT = "Join the training now — link in the bio\nor comment YOUTUBE and check the pin comment"
 VOICE_INTRO_LINE = "Stop scrolling, this will change your income completely!!!"
 
 WORDS_PER_CAPTION_CHUNK = 2
